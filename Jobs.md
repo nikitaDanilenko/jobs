@@ -7,14 +7,14 @@ This file is a literate Curry file. You can save it with the extension
 .lcurry and load it into the most recent version (\>= 0.3.3) of the
 KiCS2 compiler
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 import FiniteMap ( lookupFM, listToFM, FM )
 import Function  ( on )
 import List      ( sort )
 import Maybe     ( fromMaybe )
 ```
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 import SetFunctions ( set0, values2list )
 ```
 
@@ -23,20 +23,20 @@ Relational preliminaries
 
 Data structure for relations over finite domains.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 data Rel a b = Rel (FM (a, b) Bool) [a] [b]
 ```
 
 Returns the domain of the argument relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 firstValues :: Rel a b -> [a]
 firstValues (Rel _ as _) = as
 ```
 
 Returns the codomain of the argument relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 secondValues :: Rel a b -> [b]
 secondValues (Rel _ _ bs) = bs
 ```
@@ -45,7 +45,7 @@ Given a relation and a row "name" this function returns the
 corresponding row. The computations forces a choice for non-determnistic
 values.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 row :: (Ord a, Ord b) => Rel a b -> a -> [b]
 row (Rel fm _ bs) a = [b | b <- bs, fm ! (a, b)]
 ```
@@ -54,21 +54,21 @@ Given a relation and a column "name" this function returns the
 corresponding column. The computations forces a choice for
 non-determnistic values.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 col :: (Ord a, Ord b) => Rel a b -> b -> [a]
 col (Rel fm as _) b = [a | a <- as, fm ! (a, b)]
 ```
 
 Checks whether all rows of a relation satisfy a given predicate.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 allRows :: (Ord a, Ord b) => ([b] -> Bool) -> Rel a b -> Bool
 allRows p r = all (p . row r) (firstValues r)
 ```
 
 Checks whether all columns of a relations satisfy a given predicate.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 allColumns :: (Ord a, Ord b) => ([a] -> Bool) -> Rel a b -> Bool
 allColumns p r = all (p . col r) (secondValues r)
 ```
@@ -77,14 +77,14 @@ Given a FiniteMap and a key, this function looks up the value of the
 key. If the key is present, the value of the key is returned, otherwise
 the computation fails.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 (!) :: Ord k => FM k v -> k -> v
 fm ! k = fromMaybe failed (lookupFM fm k)
 ```
 
 "Pretty"-prints a relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 showRel :: (Ord a, Ord b, Show a, Show b) => Rel a b -> String
 showRel r = unlines [unwords [show a, ":", show (row r a)] | a <- firstValues r]
 ```
@@ -94,7 +94,7 @@ Auxiliaries
 
 Lists all values of a bounded, enumerable data type.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 listAll :: (Enum a, Bounded a) => [a]
 listAll = [minBound .. maxBound]
 ```
@@ -102,7 +102,7 @@ listAll = [minBound .. maxBound]
 Checks whether a list has a given size. This check is sufficiently lazy
 an works on infinite lists.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 hasLength :: [a] -> Int -> Bool
 hasLength []       n = n == 0
 hasLength (_ : xs) n = n > 0 && hasLength xs (n - 1)
@@ -111,7 +111,7 @@ hasLength (_ : xs) n = n > 0 && hasLength xs (n - 1)
 Checks whether two lists of comparable elements are the same when
 considered as sets.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 isEqual :: Ord a => [a] -> [a] -> Bool
 isEqual = (==) `on` sort
 ```
@@ -119,7 +119,7 @@ isEqual = (==) `on` sort
 Checks whether two lists of comparable elements are different when
 considered as sets.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 isNotEqual :: Ord a => [a] -> [a] -> Bool
 isNotEqual xs ys = not (isEqual xs ys)
 ```
@@ -127,7 +127,7 @@ isNotEqual xs ys = not (isEqual xs ys)
 Given two ranges an some filled positions, this function creates a
 relation whose missing positions are filled with free variables.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 mkNonDetRel :: (Ord a, Ord b) => [a] -> [b] -> [((a, b), Bool)] -> Rel a b
 mkNonDetRel as bs filled = Rel (listToFM (<) [((a, b), f a b) | a <- as, b <- bs]) as bs where
     f a b = fromMaybe (let x free in x) (lookup (a, b) filled)
@@ -135,21 +135,21 @@ mkNonDetRel as bs filled = Rel (listToFM (<) [((a, b), f a b) | a <- as, b <- bs
 
 This function creates a specified entry for the relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 hasValue :: Bool -> a -> b -> ((a, b), Bool)
 hasValue bool a b = ((a, b), bool)
 ```
 
 This function creates a positive entry for the relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 is :: a -> b -> ((a, b), Bool)
 is = hasValue True
 ```
 
 This function creates a negative entry for the relation.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 isNot :: a -> b -> ((a, b), Bool)
 isNot = hasValue False
 ```
@@ -172,28 +172,28 @@ Question: Who holds which jobs?
 
 Data type for the jobs.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 data Job  = Chef | Guard | Nurse | Clerk | PoliceOfficer | Teacher | Actor | Boxer
   deriving (Eq, Ord, Enum, Bounded, Show)
 ```
 
 Data type for the people.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 data Name = Roberta | Thelma | Steve | Pete
   deriving (Eq, Ord, Enum, Bounded, Show)
 ```
 
 The list of all possible jobs.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 jobs :: [Job]
 jobs = listAll
 ```
 
 The list of all possible people.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 names :: [Name]
 names = listAll
 ```
@@ -203,7 +203,7 @@ column and exactly two values in every row. Additionally, some
 properties are simpler to express in terms of rows, rather than a list
 of negations.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 solution :: Rel Name Job -> Rel Name Job
 solution r | allRows rowPred r && allColumns colPred r = r where
   rowPred row = hasLength row 2 
@@ -217,7 +217,7 @@ solution r | allRows rowPred r && allColumns colPred r = r where
 
 The preconditions specified by the puzzle.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 preconditions :: Rel Name Job
 preconditions = mkNonDetRel names jobs $
  [ 
@@ -241,7 +241,7 @@ preconditions = mkNonDetRel names jobs $
 
 Solves the puzzle and returns all possible solutions.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 solve :: IO ()
 solve = values2list (set0 (solution preconditions)) >>= mapIO_ (putStrLn . showRel)
 ```
